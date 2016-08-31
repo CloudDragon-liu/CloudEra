@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="userMapper">
+
+	<resultMap type="User" id="userBaseMap">
+		<id property="id" column="id" />
+		<result property="username" column="username" />
+		<result property="password" column="password" />
+	</resultMap>
+
+	<sql id="sf-user">
+		<if test="id != null">and ID = #{id}</if>
+		<if test="username != null">and USERNAME = #{username}</if>
+		<if test="password != null">and PASSWORD = #{password}</if>
+	</sql>
+
+	<!-- ************************************************增************************ -->
+
+	<insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+		<![CDATA[INSERT INTO user (]]>
+		<trim suffix="" suffixOverrides=",">
+			<if test="id != null">ID,</if>
+			<if test="username != null">USERNAME,</if>
+			<if test="password != null">PASSWORD,</if>
+		</trim>
+		<![CDATA[) VALUES (]]>
+		<trim suffix="" suffixOverrides=",">
+			<if test="id != null">#{id},</if>
+			<if test="username != null">#{username},</if>
+			<if test="password != null">#{password},</if>
+		</trim>
+		<![CDATA[)]]>
+	</insert>
+
+	<!-- ************************************************删************************ -->
+
+	<delete id="deleteUser" parameterType="User">
+		DELETE FROM user WHERE 1 = 1
+		<choose>
+			<when test="null != id"> AND id=#{id}</when>
+			<otherwise>
+				<if test="null != pks">
+					AND id IN
+					<foreach collection="pks" item="pk" open="(" close=")" separator=",">
+						#{pk}
+					</foreach>
+				</if>
+			</otherwise>
+		</choose>
+	</delete>
+
+	<!-- ************************************************改************************ -->
+
+	<update id="updateUser" parameterType="User">
+		UPDATE user
+		<set>
+			<trim suffix="" suffixOverrides=",">
+				<if test="id != null">ID = #{id},</if>
+				<if test="username != null">USERNAME = #{username},</if>
+				<if test="password != null">PASSWORD = #{password},</if>
+			</trim>
+		</set>
+		WHERE 1 = 1
+		<choose>
+			<when test="null != id"> AND id=#{id}</when>
+			<otherwise>
+				<if test="null != pks">
+					AND id IN
+					<foreach collection="pks" item="pk" open="(" close=")" separator=",">
+						#{pk}
+					</foreach>
+				</if>
+			</otherwise>
+		</choose>
+	</update>
+
+	<!-- ************************************************查************************ -->
+
+	<select id="selectUser" parameterType="User" resultMap="userBaseMap">
+		SELECT * FROM user WHERE 1=1
+		<include refid="sf-user" />
+	</select>
+
+	<select id="selectUserList" parameterType="User" resultMap="userBaseMap">
+		SELECT * FROM user WHERE 1=1
+		<include refid="sf-user" />
+	</select>
+
+	<select id="selectUserCount" parameterType="User" resultMap="userBaseMap">
+		SELECT count(*) FROM user WHERE 1=1
+		<include refid="sf-user" />
+	</select>
+
+</mapper>
